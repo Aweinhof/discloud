@@ -24,3 +24,4 @@ with open("discloud.conf", 'r') as f:
 client.run(token)
 
 exit()
+
