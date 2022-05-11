@@ -4,11 +4,8 @@ import sys
 
 client = discord.Client()
 
-@client.event
-async def on_ready():
-    print("Logged in as {0.user}".format(client))
-    channel = client.get_channel(int(channel_id))
 
+async def main_execution(channel):
     for i in range(1, len(sys.argv[1:]), 2):
 
         if sys.argv[i] == "-m":
@@ -17,6 +14,15 @@ async def on_ready():
             await channel.send(file=discord.File(sys.argv[i+1]))
         else:
             print("wrong arg")
+
+
+
+@client.event
+async def on_ready():
+    print("Logged in as {0.user}".format(client))
+    channel = client.get_channel(int(channel_id))
+
+    await main_execution(channel) 
 
     await client.close()
 
