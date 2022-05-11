@@ -5,9 +5,23 @@ import os
 
 client = discord.Client()
 
+# Litle function to easily quit the program
+async def quit_prog():
+    await client.close()
+
 
 async def main_execution(channel):
     await test_index_file(channel)
+
+    if(sys.argv[1] == 'upload'):
+        pass
+    elif(sys.argv[1] == 'download'):
+        pass
+    else:
+        print(" [-] Bad argument : " + sys.argv[1])
+        print("     --> first argument must be 'upload' or 'download'")
+        return
+
 
     buffer = 0
     for i in range(1, len(sys.argv), 2):
