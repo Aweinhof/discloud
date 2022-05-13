@@ -17,10 +17,63 @@ async def main_execution(channel):
         await upload_execution(channel)
     elif(sys.argv[1] == 'download'):
         await download_execution(channel)
+    elif(sys.argv[1] == 'reset'):
+        await reset(False, channel)
+    elif(sys.argv[1] == 'hardreset'):
+        await reset(True, channel)
     else:
         print(" [-] Bad argument : " + sys.argv[1])
         print("     --> first argument must be 'upload' or 'download'")
         return
+
+
+async def reset(is_hard, channel):
+    confirmed = await confirm_msg(is_hard)
+
+    if is_hard and confirmed:
+        counter = 0
+        li = await channel.history(limit=1).flatten()
+        last_msg = li[0] if len(li) else None
+        print(" [~] Deleted " + str(counter) + " messages.", end="\r")
+
+        while last_msg != None:
+            await last_msg.delete()
+            counter += 1
+            print(" [~] Deleted " + str(counter) + " messages.", end="\r")
+            li = await channel.history(limit=1).flatten()
+            last_msg = li[0] if len(li) else None
+
+        print("\n [+] Successfully cleared the index file.")
+        await update_index_f_msg_id("")
+        print(" [+] Done.")
+
+
+    elif confirmed:
+        await update_index_f_msg_id("")
+        print(" [+] Successfully cleared the index file.")
+        print(" [+] Done.")
+
+
+async def confirm_msg(is_hard):
+    if is_hard:
+        print(" /!\ ")
+        print(" /!\ You are about to reset the whole database.")
+        print(" /!\ This means that the data will be lost forever.")
+        print(" /!\ ")
+        res = input(" /!\ Type 'confirm' if you want to continue : ")
+        print()
+        if res == ("confirm"):
+            return True
+    else:
+        print(" /!\ ")
+        print(" /!\ You are about to reset the index file.")
+        print(" /!\ This means that you will still be able to get back the data manualy.")
+        print(" /!\ ")
+        res = input(" /!\ Do you want to continue ? y/n : ")
+        print()
+        if res == "y" or res == "yes" or res == "Y" or res == "YES":
+            return True
+    return False
 
 
 async def upload_execution(channel):
@@ -123,12 +176,12 @@ async def check_files():
 # in the channel and seve the message id in the .conf file (third line)
 # =================================================================================
 async def test_index_file(channel):
-    if(index_file_id == ""):
+    if(index_file_id == "" or index_file_id == "\n"):
         print(" [~] index file message id not found : creating a new index file")
         await create_index_file(channel)
 
     else:
-        print(" [+] index file message id found")
+        print(" [+] index file message id found : " + index_file_id)
 
 
 
@@ -139,8 +192,9 @@ async def create_index_file(channel):
     index_msg = await channel.send(file=discord.File('index.csv'))
     index_file_id = index_msg.id
     os.remove('index.csv')
-    with open('discloud.conf', 'a') as f:
-        f.write(str(index_file_id))
+    await update_index_f_msg_id(index_file_id)
+    #with open('discloud.conf', 'a') as f:
+    #    f.write(str(index_file_id))
 
 # =================================================================================
 
