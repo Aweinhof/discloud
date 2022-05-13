@@ -37,21 +37,42 @@ async def upload_execution(channel):
         #=================== treatment : send file and update index file  ===================
 
         file_name = sys.argv[2]
-        index_fetched = await fetch_index()
+        index_fetched = await fetch_index(channel, index_file_id)
 
-        # TODO : send files and add line to the index file
+        # send files, safe msg indexes and add line to the index file
         if(index_fetched):
-            pass
+
+            line_to_add = file_name
+            for param_nb in range(3, len(sys.argv)):
+                msg = await channel.send(file=discord.File(sys.argv[param_nb]))
+                line_to_add += ("," + str(msg.id))
+
+            print(" [+] Added line to index file : " + line_to_add)
+
+
+            with open('index.csv', 'a') as index_file:
+                index_file.write(line_to_add + "\n")
+
+            await send_and_del_index(channel)
+
+            print(' [+] Done.')
 
         else:
             print(" [-] Error : could not fetch the index file...")
             return
 
 
-        await send_and_del_index(channel)
-
         #====================================================================================
 
+
+async def update_index_f_msg_id(new_msg_id):
+    a_file = open("discloud.conf", "r")
+    list_of_lines = a_file.readlines()
+    list_of_lines[2] = str(new_msg_id) + "\n"
+
+    a_file = open("discloud.conf", "w")
+    a_file.writelines(list_of_lines)
+    a_file.close()
 
 
 async def download_execution(channel):
@@ -62,12 +83,22 @@ async def add_file_bdd(channel):
     return
 
 
-async def fetch_index(channel):
-    return
+async def fetch_index(channel, index_id):
+    index_f_msg = await channel.fetch_message(index_id)
+    for attach in index_f_msg.attachments:
+        await attach.save(f"./index.csv")
+    
+    if (os.path.exists("index.csv")):
+        return True
+    else:
+        return False
 
 
 async def send_and_del_index(channel):
-    return
+    msg = await channel.send(file=discord.File("index.csv"))
+    await update_index_f_msg_id(msg.id)
+    os.system('rm index.csv')
+    print(' [+] Successfully sent the new index file.')
 
 
 async def check_files():
