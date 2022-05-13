@@ -14,29 +14,77 @@ async def main_execution(channel):
     await test_index_file(channel)
 
     if(sys.argv[1] == 'upload'):
-        pass
+        await upload_execution(channel)
     elif(sys.argv[1] == 'download'):
-        pass
+        await download_execution(channel)
     else:
         print(" [-] Bad argument : " + sys.argv[1])
         print("     --> first argument must be 'upload' or 'download'")
         return
 
 
-    buffer = 0
-    for i in range(1, len(sys.argv), 2):
-        i += buffer
+async def upload_execution(channel):
+    check = await check_files()
 
-        if sys.argv[i] == "-m":
-            message = await channel.send("got a -m ! : " + sys.argv[i+1])
-            print(" [+] sent message id : " + str(message.id))
+    if(check):
 
-        elif sys.argv[i] == "-f":
-            await channel.send(file=discord.File(sys.argv[i+1]))
+        # here we have to refetch the index_file_id, needed if we just created an index file
+        with open("discloud.conf", 'r') as f:
+            token = f.readline()            # token of the discord bot
+            channel_id = f.readline()       # id of the channel that is used
+            index_file_id = f.readline()    # id of the message that contains the index file
+
+        #=================== treatment : send file and update index file  ===================
+
+        file_name = sys.argv[2]
+        index_fetched = await fetch_index()
+
+        # TODO : send files and add line to the index file
+        if(index_fetched):
+            pass
 
         else:
-            print(" [-] Bad argument : " + sys.argv[i])
-            buffer-=1
+            print(" [-] Error : could not fetch the index file...")
+            return
+
+
+        await send_and_del_index(channel)
+
+        #====================================================================================
+
+
+
+async def download_execution(channel):
+    return
+
+
+async def add_file_bdd(channel):
+    return
+
+
+async def fetch_index(channel):
+    return
+
+
+async def send_and_del_index(channel):
+    return
+
+
+async def check_files():
+    for i in range(3, len(sys.argv)):
+        file_exist = os.path.exists(sys.argv[i])
+        if not file_exist:
+            print(" [-] file not exist !")
+            await quit_prog()
+            return False
+
+        size = os.path.getsize(sys.argv[i])
+        if(size > 8000000):
+            print(' [-] Size of file is', int(size/1000000), 'Mb, must not exceed 8 Mb.')
+            await quit_prog()
+            return False
+
+    return True
 
 
 # If an index file message id is found in the discloud.conf,
@@ -58,9 +106,10 @@ async def create_index_file(channel):
         pass
 
     index_msg = await channel.send(file=discord.File('index.csv'))
+    index_file_id = index_msg.id
     os.remove('index.csv')
     with open('discloud.conf', 'a') as f:
-        f.write(str(index_msg.id))
+        f.write(str(index_file_id))
 
 # =================================================================================
 
@@ -78,7 +127,6 @@ async def on_ready():
 ########################################## MAIN ##########################################
 
 # variables 
-
 with open("discloud.conf", 'r') as f:
     token = f.readline()            # token of the discord bot
     channel_id = f.readline()       # id of the channel that is used
