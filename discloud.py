@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import discord
 import sys
 import os
@@ -14,11 +16,24 @@ async def main_execution(channel):
     await test_index_file(channel)
 
     if(sys.argv[1] == 'upload'):
-        await upload_execution(channel)
+        if len(sys.argv) < 3:
+            print(" [-] Bad argument : " + sys.argv[1])
+            print("     --> upload argument must be folloxed by other arguments")
+            return
+        else:
+            await upload_execution(channel)
+
     elif(sys.argv[1] == 'download'):
-        await download_execution(channel)
+        if len(sys.argv) < 3:
+            print(" [-] Bad argument : " + sys.argv[1])
+            print("     --> download argument must be folloxed by other arguments")
+            return
+        else:
+            await download_execution(channel)
+
     elif(sys.argv[1] == 'reset'):
         await reset(False, channel)
+
     elif(sys.argv[1] == 'hardreset'):
         await reset(True, channel)
     else:
@@ -31,6 +46,8 @@ async def reset(is_hard, channel):
     confirmed = await confirm_msg(is_hard)
 
     if is_hard and confirmed:
+        await update_index_f_msg_id("")
+
         counter = 0
         li = await channel.history(limit=1).flatten()
         last_msg = li[0] if len(li) else None
@@ -44,7 +61,6 @@ async def reset(is_hard, channel):
             last_msg = li[0] if len(li) else None
 
         print("\n [+] Successfully cleared the index file.")
-        await update_index_f_msg_id("")
         print(" [+] Done.")
 
 
@@ -210,6 +226,10 @@ async def on_ready():
 
 
 ########################################## MAIN ##########################################
+
+if len(sys.argv) == 1:
+    print(" [-] Error, no arguments are given. Exit")
+    exit()
 
 # variables 
 with open("discloud.conf", 'r') as f:
