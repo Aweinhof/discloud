@@ -95,9 +95,20 @@ async def confirm_msg(is_hard):
     return False
 
 
+async def get_index_list(channel):
+    files_list = list()
+    await fetch_index(channel)
+    with open("index.csv", 'r') as ifile:
+        for line in ifile:
+            files_list.append(line.replace('\n', ''))
+
+    os.system('rm index.csv')
+    return files_list
+
+
 async def show_files(channel):
     files_set = set()
-    index_fetched = await fetch_index(channel)
+    await fetch_index(channel)
     with open("index.csv", 'r') as ifile:
         for line in ifile:
             filename = line.split(",")[0]
@@ -155,10 +166,33 @@ async def update_index_f_msg_id(new_msg_id):
 
 
 async def download_execution(channel):
-    return
+    index = await get_index_list(channel)
+    index_line = ""
+    for i in range(len(index)):
+        j = len(index) - 1 - i
+        if(index[j].split(',')[0] == sys.argv[2]):
+            index_line = index[j]
+            break
 
+    if(index_line == ""):
+        print(" [-] Given file not found in the index file.")
+    else:
+        print(" [+] File found, last version taken.")
+        i = 0
+        amount_files = len(index_line.split(',')) - 1
+        print(" [~] Downloading files 1/" + str(amount_files) +" : 0 %", end='\r')
 
-async def add_file_bdd(channel):
+        for msg_id in index_line.split(',')[1:]:
+            msg = await channel.fetch_message(int(msg_id))
+            for attach in msg.attachments:
+                filename = sys.argv[2] + str(i)
+                await attach.save(f"./{filename}")
+                i += 1
+                advancement = str(int((i / amount_files) * 100))
+                print(" [~] Downloading files " + str(i) + "/" + str(amount_files) + " : " + advancement + " %", end='\r')
+
+        print(" [~] Downloading files " + str(i) + "/" + str(amount_files) + " : " + advancement + " %")
+
     return
 
 
