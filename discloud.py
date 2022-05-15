@@ -18,18 +18,18 @@ async def main_execution(channel):
     if(len(sys.argv) == 1):
         await show_files(channel)
 
-    elif(sys.argv[1] == 'upload'):
+    elif(sys.argv[1] == 'upload_query'):
         if len(sys.argv) < 3:
             print(" [-] Bad argument : " + sys.argv[1])
-            print("     --> upload argument must be followed by other arguments")
+            print("     --> upload_query argument must be followed by other arguments")
             return
         else:
-            await upload_execution(channel)
+            await upload_query_execution(channel)
 
     elif(sys.argv[1] == 'download'):
         if len(sys.argv) < 3:
             print(" [-] Bad argument : " + sys.argv[1])
-            print("     --> download argument must be followed by other arguments")
+            print("     --> download argument must be followed by the file name you want to download")
             return
         else:
             await download_execution(channel)
@@ -43,6 +43,20 @@ async def main_execution(channel):
         print(" [-] Bad argument : " + sys.argv[1])
         print("     --> first argument must be 'upload' or 'download'")
         return
+
+
+def upload_execution():
+    os.system('mkdir tempcontainer')
+    filename = sys.argv[2].split('/')[-1]
+    splitquery = "split " + sys.argv[2] + " -b 500 -d tempcontainer/" + filename   
+    os.system(splitquery)
+    
+    uploadquery = "./discloud.py upload_query " + filename
+    for file in sorted(os.listdir('tempcontainer')):
+        uploadquery += " tempcontainer/" + file
+
+    os.system(uploadquery)
+    os.system('rm -r tempcontainer')
 
 
 async def reset(is_hard, channel):
@@ -121,7 +135,7 @@ async def show_files(channel):
     return sorted(files_set)
 
 
-async def upload_execution(channel):
+async def upload_query_execution(channel):
     check = await check_files()
 
     if(check):
@@ -277,15 +291,24 @@ async def on_ready():
 
 ########################################## MAIN ##########################################
 
-#if len(sys.argv) == 1:
-#    print(" [-] Error, no arguments are given. Exit")
-#    exit()
-
 # variables 
 with open("discloud.conf", 'r') as f:
     token = f.readline()            # token of the discord bot
     channel_id = f.readline()       # id of the channel that is used
     index_file_id = f.readline()    # id of the message that contains the index file
+
+if(sys.argv[1] == 'upload'):
+    if len(sys.argv) != 3:
+        print(" [-] Bad argument : " + sys.argv[3])
+        print("     --> upload argument must be followed by only one argument")
+        exit()
+    elif not os.path.exists(sys.argv[2]):
+        print(" [-] Bad argument : " + sys.argv[2])
+        print("     --> file doesn't exists")
+        exit()
+    else:
+        upload_execution()
+        exit()
 
 
 client.run(token)
