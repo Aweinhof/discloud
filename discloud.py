@@ -15,10 +15,13 @@ async def quit_prog():
 async def main_execution(channel):
     await test_index_file(channel)
 
-    if(sys.argv[1] == 'upload'):
+    if(len(sys.argv) == 1):
+        await show_files(channel)
+
+    elif(sys.argv[1] == 'upload'):
         if len(sys.argv) < 3:
             print(" [-] Bad argument : " + sys.argv[1])
-            print("     --> upload argument must be folloxed by other arguments")
+            print("     --> upload argument must be followed by other arguments")
             return
         else:
             await upload_execution(channel)
@@ -26,7 +29,7 @@ async def main_execution(channel):
     elif(sys.argv[1] == 'download'):
         if len(sys.argv) < 3:
             print(" [-] Bad argument : " + sys.argv[1])
-            print("     --> download argument must be folloxed by other arguments")
+            print("     --> download argument must be followed by other arguments")
             return
         else:
             await download_execution(channel)
@@ -92,21 +95,28 @@ async def confirm_msg(is_hard):
     return False
 
 
+async def show_files(channel):
+    files_set = set()
+    index_fetched = await fetch_index(channel)
+    with open("index.csv", 'r') as ifile:
+        for line in ifile:
+            filename = line.split(",")[0]
+            files_set.add(filename)
+    
+    for i in range(len(files_set)):
+        print(" [" + str(i) + "] " + sorted(files_set)[i])
+
+    os.system('rm index.csv')
+    return sorted(files_set)
+
+
 async def upload_execution(channel):
     check = await check_files()
 
     if(check):
 
-        # here we have to refetch the index_file_id, needed if we just created an index file
-        with open("discloud.conf", 'r') as f:
-            token = f.readline()            # token of the discord bot
-            channel_id = f.readline()       # id of the channel that is used
-            index_file_id = f.readline()    # id of the message that contains the index file
-
-        #=================== treatment : send file and update index file  ===================
-
         file_name = sys.argv[2]
-        index_fetched = await fetch_index(channel, index_file_id)
+        index_fetched = await fetch_index(channel)
 
         # send files, safe msg indexes and add line to the index file
         if(index_fetched):
@@ -152,7 +162,13 @@ async def add_file_bdd(channel):
     return
 
 
-async def fetch_index(channel, index_id):
+async def fetch_index(channel):
+    # here we have to refetch the index_file_id, needed if we just created an index file
+    with open("discloud.conf", 'r') as f:
+        token = f.readline()            # token of the discord bot
+        channel_id = f.readline()       # id of the channel that is used
+        index_id = f.readline()    # id of the message that contains the index file
+
     index_f_msg = await channel.fetch_message(index_id)
     for attach in index_f_msg.attachments:
         await attach.save(f"./index.csv")
@@ -227,9 +243,9 @@ async def on_ready():
 
 ########################################## MAIN ##########################################
 
-if len(sys.argv) == 1:
-    print(" [-] Error, no arguments are given. Exit")
-    exit()
+#if len(sys.argv) == 1:
+#    print(" [-] Error, no arguments are given. Exit")
+#    exit()
 
 # variables 
 with open("discloud.conf", 'r') as f:
