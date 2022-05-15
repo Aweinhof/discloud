@@ -192,6 +192,7 @@ async def download_execution(channel):
         print(" [-] Given file not found in the index file.")
     else:
         print(" [+] File found, last version taken.")
+        os.system('mkdir tempcontainer')
         i = 0
         amount_files = len(index_line.split(',')) - 1
         print(" [~] Downloading files 1/" + str(amount_files) +" : 0 %", end='\r')
@@ -200,12 +201,16 @@ async def download_execution(channel):
             msg = await channel.fetch_message(int(msg_id))
             for attach in msg.attachments:
                 filename = sys.argv[2] + str(i)
-                await attach.save(f"./{filename}")
+                await attach.save(f"tempcontainer/{filename}")
                 i += 1
                 advancement = str(int((i / amount_files) * 100))
                 print(" [~] Downloading files " + str(i) + "/" + str(amount_files) + " : " + advancement + " %", end='\r')
 
         print(" [~] Downloading files " + str(i) + "/" + str(amount_files) + " : " + advancement + " %")
+        print(" [~] Restitution of the original file...")
+        catquery = "cat tempcontainer/" + sys.argv[2] + "* > " + sys.argv[2]
+        os.system(catquery)
+        os.system('rm -r tempcontainer')
 
     return
 
