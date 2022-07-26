@@ -48,7 +48,7 @@ async def main_execution(channel):
 def upload_execution():
     os.system('mkdir tempcontainer')
     filename = sys.argv[2].split('/')[-1]
-    splitquery = "split " + sys.argv[2] + " -b 500 -d tempcontainer/" + filename   
+    splitquery = "split " + sys.argv[2] + " -b 5M -d tempcontainer/" + filename   
     os.system(splitquery)
     
     uploadquery = "./discloud.py upload_query " + filename
@@ -200,7 +200,9 @@ async def download_execution(channel):
         for msg_id in index_line.split(',')[1:]:
             msg = await channel.fetch_message(int(msg_id))
             for attach in msg.attachments:
-                filename = sys.argv[2] + str(i)
+                #filename = sys.argv[2] + str(i)
+                amount0 = 7 - len(str(i))
+                filename = amount0 * "0" + str(i)
                 await attach.save(f"tempcontainer/{filename}")
                 i += 1
                 advancement = str(int((i / amount_files) * 100))
@@ -208,9 +210,10 @@ async def download_execution(channel):
 
         print(" [~] Downloading files " + str(i) + "/" + str(amount_files) + " : " + advancement + " %")
         print(" [~] Restitution of the original file...")
-        catquery = "cat tempcontainer/" + sys.argv[2] + "* > " + sys.argv[2]
+        #catquery = "cat tempcontainer/" + sys.argv[2] + "* > " + sys.argv[2]
+        catquery = "cat tempcontainer/* > " + sys.argv[2]
         os.system(catquery)
-        os.system('rm -r tempcontainer')
+        #os.system('rm -r tempcontainer')
 
     return
 
