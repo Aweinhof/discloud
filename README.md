@@ -19,12 +19,11 @@ discloud.py will interact with discord and execute the queries thanks to a bot. 
 
 #### upload mode
 
-First argument after "upload", must be the name you give to the uploading file. Other arguments are all the paths of the parsed data files.
+The only argument with "upload" must be the path of the file to upload.
 
 #### download mode
 
-nothing yet...
-
+Argument after download must be the name of the file you want to download.
 
 ## index.csv
 
@@ -43,7 +42,7 @@ pythonlogo.png,1111111111,1111111112,1111111113
 ```
 
 The files contained in messages 1111111111 and 1111111112 would be about 8 Mb while the last one would be 4 Mb.
-Those files can then be fetched by disquery.py, after what discloud.sh will be able to reconstruct the complete file.
+Those files would then be fetched, after what discloud.py will be able to reconstruct the complete file.
 
 
 ## discloud.conf
@@ -53,4 +52,6 @@ Those files can then be fetched by disquery.py, after what discloud.sh will be a
 [channel_id]
 [message id of the index.csv file]
 ```
+
+Only the discord bot token and channel id need to be set. The bot will automatically create a new index file.
 
