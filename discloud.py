@@ -214,7 +214,7 @@ async def download_execution(channel):
         #catquery = "cat tempcontainer/" + sys.argv[2] + "* > " + sys.argv[2]
         catquery = "cat tempcontainer/* > " + sys.argv[2]
         os.system(catquery)
-        #os.system('rm -r tempcontainer')
+        os.system('rm -r tempcontainer')
 
     return
 
