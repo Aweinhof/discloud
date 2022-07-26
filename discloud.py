@@ -3,6 +3,7 @@
 import discord
 import sys
 import os
+import time
 
 
 client = discord.Client()
@@ -146,7 +147,7 @@ async def upload_query_execution(channel):
         # send files, safe msg indexes and add line to the index file
         if(index_fetched):
 
-            line_to_add = file_name
+            line_to_add = file_name + "," + time.strftime("%D %H:%M")
             for param_nb in range(3, len(sys.argv)):
                 msg = await channel.send(file=discord.File(sys.argv[param_nb]))
                 line_to_add += ("," + str(msg.id))
@@ -194,10 +195,10 @@ async def download_execution(channel):
         print(" [+] File found, last version taken.")
         os.system('mkdir tempcontainer')
         i = 0
-        amount_files = len(index_line.split(',')) - 1
+        amount_files = len(index_line.split(',')) - 2
         print(" [~] Downloading files 1/" + str(amount_files) +" : 0 %", end='\r')
 
-        for msg_id in index_line.split(',')[1:]:
+        for msg_id in index_line.split(',')[2:]:
             msg = await channel.fetch_message(int(msg_id))
             for attach in msg.attachments:
                 #filename = sys.argv[2] + str(i)
@@ -305,9 +306,9 @@ with open("discloud.conf", 'r') as f:
     channel_id = f.readline()       # id of the channel that is used
     index_file_id = f.readline()    # id of the message that contains the index file
 
-if(sys.argv[1] == 'upload'):
+if(len(sys.argv) > 1 and sys.argv[1] == 'upload'):
     if len(sys.argv) != 3:
-        print(" [-] Bad argument : " + sys.argv[3])
+        print(" [-] Bad argument : must specify a file after upload")
         print("     --> upload argument must be followed by only one argument")
         exit()
     elif not os.path.exists(sys.argv[2]):
