@@ -19,8 +19,8 @@ async def main_execution(channel):
     if(len(sys.argv) == 1):
         await show_files(channel)
 
-    elif sys.argv[1] == 'category':
-        print("shit")
+    elif sys.argv[1] == 'category' or sys.argv[1] == 'c' or sys.argv[1] == 'categ' or sys.argv[1] == 'Category':
+        await show_categories(channel)
 
     elif(sys.argv[1] == 'upload_query'):
         if len(sys.argv) < 3:
@@ -170,11 +170,41 @@ async def show_files(channel):
     os.system('rm index.csv')
 
 
+async def show_categories(channel):
+    categ_size = 20
+
+    async def add_line(categ):
+        space_before = int((categ_size - len(categ))/2)
+        space_after = categ_size - space_before - len(categ)
+        print("# " + space_before*" " + categ + space_after*" " + " #")
+
+    print("####" + categ_size*"#")
+    print("# " + categ_size*" " + " #")
+    await add_line("Categories")
+    print("# " + categ_size*" " + " #")
+    print("####" + categ_size*"#")
+    print("# " + categ_size*" " + " #")
+
+    await fetch_index(channel)
+    categories = set()
+    with open("index.csv", 'r') as ifile:
+        for line in ifile:
+            categories.add( line.split(",")[2] )
+    if not categories.isdisjoint({''}):
+        categories.remove('')
+
+    for cat in categories:
+        await add_line(cat)
+
+    print("# " + categ_size*" " + " #")
+    print("####" + categ_size*"#")
+
+
 async def upload_query_execution(channel):
     check = await check_files()
 
     if(check):
-        categ = input("Category (ENTR for none) : ")
+        categ = input(" [~] Category (ENTR for none) : ")
 
         file_name = sys.argv[2]
         index_fetched = await fetch_index(channel)
