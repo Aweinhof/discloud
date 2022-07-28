@@ -45,9 +45,65 @@ async def main_execution(channel):
     elif(sys.argv[1] == 'hardreset'):
         await reset(True, channel)
     else:
-        print(" [-] Bad argument : " + sys.argv[1])
-        print("     --> first argument must be 'upload' or 'download'")
-        return
+        if not await show_by_category(channel):
+            print(" [-] Bad argument : " + sys.argv[1])
+            print("     --> first argument must be 'upload', 'download' or either a category")
+            return
+
+async def show_by_category(channel):
+    index = await get_index_list(channel)
+    index_lines = []
+    for i in range(len(index)):
+        if(index[i].split(',')[2] == sys.argv[1]):
+            index_lines.append(index[i])
+
+    if len(index_lines) == 0:
+        return False
+    else:
+        await show_files_by_category(index_lines)        
+        return True
+
+
+async def show_files_by_category(list_of_lines):
+    name_size = 30
+    category_size = 20
+    date_size = 16
+
+    async def add_line(file_n, categ_n, date_n):
+        space_name_before = int(((name_size - len(file_n))/2))
+        space_name_after = (name_size - len(file_n)) - space_name_before
+    
+        space_categ_before = int(((category_size - len(categ_n))/2))
+        space_categ_after = (category_size - len(categ_n)) - space_categ_before
+
+        space_date_before = int(((date_size - len(date_n))/2))
+        space_date_after = (date_size - len(date_n)) - space_date_before
+
+        print("# " + 
+            space_name_before*" " + file_n + space_name_after*" " + 
+            " # " + 
+            space_categ_before*" " + categ_n + space_categ_after*" " + 
+            " # " + 
+            space_date_before*" " + date_n + space_date_after*" " + 
+            " #")
+
+    print("##########" + (name_size + category_size + date_size)*"#")
+    print("# " + name_size*" " + " # " + category_size*" " + " # " + date_size*" " + " #")
+
+    await add_line("Filename", "Category", "Date")
+        
+    print("# " + name_size*" " + " # " + category_size*" " + " # " + date_size*" " + " #")
+    print("##########" + (name_size + category_size + date_size)*"#")
+    print("# " + name_size*" " + " # " + category_size*" " + " # " + date_size*" " + " #")
+
+    for line in list_of_lines:
+        filename = line.split(",")[0]
+        categ = line.split(",")[2]
+        date = line.split(",")[1]
+        await add_line(filename, categ, date)
+    
+    print("# " + name_size*" " + " # " + category_size*" " + " # " + date_size*" " + " #")
+    print("##########" + (name_size + category_size + date_size)*"#")
 
 
 def upload_execution():
