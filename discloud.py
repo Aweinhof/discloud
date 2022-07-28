@@ -6,6 +6,7 @@ import os
 import time
 
 
+#client = discord.Client(restTimeOffset=0)
 client = discord.Client()
 
 # Litle function to easily quit the program
@@ -52,7 +53,7 @@ async def main_execution(channel):
 def upload_execution():
     os.system('mkdir tempcontainer')
     filename = sys.argv[2].split('/')[-1]
-    splitquery = "split " + sys.argv[2] + " -b 5M -d tempcontainer/" + filename   
+    splitquery = "split " + sys.argv[2] + " -b 8M -d tempcontainer/" + filename   
     os.system(splitquery)
     
     uploadquery = "./discloud.py upload_query " + filename
@@ -241,18 +242,23 @@ async def upload_query_execution(channel):
         if(index_fetched):
 
             line_to_add = file_name + "," + time.strftime("%D %H:%M") + "," + ca
+            amount_files = len(sys.argv) - 3
+            print(" [~] Sending files 0/" + str(amount_files) + " : 0 %", end='\r')
             for param_nb in range(3, len(sys.argv)):
                 msg = await channel.send(file=discord.File(sys.argv[param_nb]))
                 line_to_add += ("," + str(msg.id))
 
-            print(" [+] Added line to index file : " + line_to_add)
+                advancement = str(int(((param_nb-2) / amount_files) * 100))
+                print(" [~] Sending files " + str(param_nb-2) + "/" + str(amount_files) + " : " + advancement + " %", end='\r')
+            print(" [~] Sending files " + str(amount_files) + "/" + str(amount_files) + " : 100 %" + "\n")
 
-
+            
             with open('index.csv', 'a') as index_file:
                 index_file.write(line_to_add + "\n")
 
             await send_and_del_index(channel)
 
+            print(" [+] Added line to index file : " + line_to_add)
             print(' [+] Done.')
 
         else:
@@ -345,8 +351,8 @@ async def check_files():
             return False
 
         size = os.path.getsize(sys.argv[i])
-        if(size > 8000000):
-            print(' [-] Size of file is', int(size/1000000), 'Mb, must not exceed 8 Mb.')
+        if(size > 8388608):
+            print(' [-] Size of file is', int(size/1048576), 'Mb, must not exceed 8 Mb.')
             await quit_prog()
             return False
 
