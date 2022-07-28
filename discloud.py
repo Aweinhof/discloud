@@ -31,7 +31,7 @@ async def main_execution(channel):
         else:
             await upload_query_execution(channel)
 
-    elif(sys.argv[1] == 'download'):
+    elif(sys.argv[1] == 'download' or sys.argv[1] == 'd'):
         if len(sys.argv) < 3:
             print(" [-] Bad argument : " + sys.argv[1])
             print("     --> download argument must be followed by the file name you want to download")
@@ -461,7 +461,7 @@ with open("discloud.conf", 'r') as f:
     channel_id = f.readline()       # id of the channel that is used
     index_file_id = f.readline()    # id of the message that contains the index file
 
-if(len(sys.argv) > 1 and sys.argv[1] == 'upload'):
+if(len(sys.argv) > 1 and (sys.argv[1] == 'upload' or sys.argv[1] == 'u')):
     if len(sys.argv) != 3:
         print(" [-] Bad argument : must specify a file after upload")
         print("     --> upload argument must be followed by only one argument")
