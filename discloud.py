@@ -204,7 +204,35 @@ async def upload_query_execution(channel):
     check = await check_files()
 
     if(check):
-        categ = input(" [~] Category (ENTR for none) : ")
+        ca = '////////'
+        
+        while ca == '////////':
+            ca = input(" [~] Category (ENTR for none) : ")
+            if ca == 'c' \
+                or ca == 'categ' \
+                or ca == 'category' \
+                or ca == 'Category' \
+                or ca == 'upload' \
+                or ca == 'download' \
+                or ca == 'u' \
+                or ca == 'c' \
+                or ca == 'C' \
+                or ca == 'd' \
+                or ca == 'U' \
+                or ca == 'D':
+                    ca = '////////'
+                    print("\n [-] Please use another category name")
+            elif len(ca.split(' ')) > 1 \
+                or len(ca.split(',')) > 1 \
+                or len(ca.split('.')) > 1 \
+                or len(ca.split(':')) > 1 \
+                or len(ca.split('"')) > 1 \
+                or len(ca.split("'")) > 1 \
+                or len(ca.split('@')) > 1:
+                    ca = '////////'
+                    print("\n [-] Please avoid the use of spaces and special characters")
+            print("\n")
+        
 
         file_name = sys.argv[2]
         index_fetched = await fetch_index(channel)
@@ -212,7 +240,7 @@ async def upload_query_execution(channel):
         # send files, safe msg indexes and add line to the index file
         if(index_fetched):
 
-            line_to_add = file_name + "," + time.strftime("%D %H:%M") + "," + categ
+            line_to_add = file_name + "," + time.strftime("%D %H:%M") + "," + ca
             for param_nb in range(3, len(sys.argv)):
                 msg = await channel.send(file=discord.File(sys.argv[param_nb]))
                 line_to_add += ("," + str(msg.id))
