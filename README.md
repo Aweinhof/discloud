@@ -3,6 +3,10 @@
 A MacOS / Linux (not yet MacOS) program that uses a discord conversation to store stuff.
 discloud.py will interact with discord and execute the queries thanks to a bot. It needs to have a discloud.conf file and also to have disclord.py installed (pip3 install discord.py).
 
+Comming soon :
+- The size of each file when you list them
+- an init mode to easily setup a discloud.conf file
+
 ## discloud.py
 ```bash
 ./disquery.py
