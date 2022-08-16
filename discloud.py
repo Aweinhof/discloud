@@ -109,7 +109,13 @@ async def show_files_by_category(list_of_lines):
 def upload_execution():
     os.system('mkdir tempcontainer')
     filename = sys.argv[2].split('/')[-1]
-    splitquery = "split " + sys.argv[2] + " -b 8M -d tempcontainer/" + filename   
+
+    # ------- old command that worked on linux -------
+    #splitquery = "split " + sys.argv[2] + " -b 8M -d tempcontainer/" + filename
+
+    # ------- new that should work on both linux and MacOS -------
+    splitquery = "split -b 8m " + sys.argv[2] + " tempcontainer/"
+
     os.system(splitquery)
     
     uploadquery = "./discloud.py upload_query " + filename
