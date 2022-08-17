@@ -68,8 +68,9 @@ async def show_files_by_category(list_of_lines):
     name_size = 30
     category_size = 20
     date_size = 16
+    filesize_size = 10
 
-    async def add_line(file_n, categ_n, date_n):
+    async def add_line(file_n, categ_n, size_n, date_n):
         space_name_before = int(((name_size - len(file_n))/2))
         space_name_after = (name_size - len(file_n)) - space_name_before
     
@@ -79,35 +80,42 @@ async def show_files_by_category(list_of_lines):
         space_date_before = int(((date_size - len(date_n))/2))
         space_date_after = (date_size - len(date_n)) - space_date_before
 
+        space_size_before = int(((filesize_size - len(size_n))/2))
+        space_size_after = (filesize_size - len(size_n)) - space_size_before
+
         print("# " + 
             space_name_before*" " + file_n + space_name_after*" " + 
             " # " + 
             space_categ_before*" " + categ_n + space_categ_after*" " + 
             " # " + 
+            space_size_before*" " + size_n + space_size_after*" " +
+            " # " +
             space_date_before*" " + date_n + space_date_after*" " + 
             " #")
 
-    print("##########" + (name_size + category_size + date_size)*"#")
-    print("# " + name_size*" " + " # " + category_size*" " + " # " + date_size*" " + " #")
+    print("#############" + (name_size + category_size + filesize_size + date_size)*"#")
+    print("# " + name_size*" " + " # " + category_size*" " + " # " + filesize_size*" " + " # " + date_size*" " + " #")
 
-    await add_line("Filename", "Category", "Date")
+    await add_line("Filename", "Category", "Size", "Date")
         
-    print("# " + name_size*" " + " # " + category_size*" " + " # " + date_size*" " + " #")
-    print("##########" + (name_size + category_size + date_size)*"#")
-    print("# " + name_size*" " + " # " + category_size*" " + " # " + date_size*" " + " #")
+    print("# " + name_size*" " + " # " + category_size*" " + " # " + filesize_size*" " + " # " + date_size*" " + " #")
+    print("#############" + (name_size + category_size + filesize_size + date_size)*"#")
+    print("# " + name_size*" " + " # " + category_size*" " + " # " + filesize_size*" " + " # " + date_size*" " + " #")
 
     for line in list_of_lines:
         filename = line.split(",")[0]
         categ = line.split(",")[2]
         date = line.split(",")[1]
-        await add_line(filename, categ, date)
+        size = line.split(",")[3].replace("-", " ")
+        await add_line(filename, categ, size, date)
     
-    print("# " + name_size*" " + " # " + category_size*" " + " # " + date_size*" " + " #")
-    print("##########" + (name_size + category_size + date_size)*"#")
+    print("# " + name_size*" " + " # " + category_size*" " + " # " + filesize_size*" " + " # " + date_size*" " + " #")
+    print("#############" + (name_size + category_size + filesize_size + date_size)*"#")
 
 
 def upload_execution():
     os.system('mkdir tempcontainer')
+    size = getSize(sys.argv[2])
     filename = sys.argv[2].split('/')[-1]
 
     # ------- old command that worked on linux -------
@@ -118,12 +126,35 @@ def upload_execution():
 
     os.system(splitquery)
     
-    uploadquery = "./discloud.py upload_query " + filename
+    uploadquery = "./discloud.py upload_query " + filename + " " + size
     for file in sorted(os.listdir('tempcontainer')):
         uploadquery += " tempcontainer/" + file
 
     os.system(uploadquery)
     os.system('rm -r tempcontainer')
+
+
+def getSize(filename):
+    size = os.path.getsize(filename)
+    res = ""
+
+    if size < 1000:
+        # b
+        res = str(size) + "-b"
+
+    elif size < 1000000:
+        # Kb
+        res = str(size // 1000) + "-Kb"
+
+    elif size < 1000000000:
+        # Mb
+        res = str(size // 1000000) + "-Mb"
+
+    else:
+        # Gb
+        res = str(size // 1000000000) + "-Gb"
+
+    return res
 
 
 async def reset(is_hard, channel):
@@ -191,8 +222,9 @@ async def show_files(channel):
     name_size = 30
     category_size = 20
     date_size = 16
+    filesize_size = 10
 
-    async def add_line(file_n, categ_n, date_n):
+    async def add_line(file_n, categ_n, size_n, date_n):
         space_name_before = int(((name_size - len(file_n))/2))
         space_name_after = (name_size - len(file_n)) - space_name_before
     
@@ -202,22 +234,27 @@ async def show_files(channel):
         space_date_before = int(((date_size - len(date_n))/2))
         space_date_after = (date_size - len(date_n)) - space_date_before
 
+        space_size_before = int(((filesize_size - len(size_n))/2))
+        space_size_after = (filesize_size - len(size_n)) - space_size_before
+
         print("# " + 
             space_name_before*" " + file_n + space_name_after*" " + 
             " # " + 
             space_categ_before*" " + categ_n + space_categ_after*" " + 
             " # " + 
+            space_size_before*" " + size_n + space_size_after*" " +
+            " # " +
             space_date_before*" " + date_n + space_date_after*" " + 
             " #")
 
-    print("##########" + (name_size + category_size + date_size)*"#")
-    print("# " + name_size*" " + " # " + category_size*" " + " # " + date_size*" " + " #")
+    print("#############" + (name_size + category_size + filesize_size + date_size)*"#")
+    print("# " + name_size*" " + " # " + category_size*" " + " # " + filesize_size*" " + " # " + date_size*" " + " #")
 
-    await add_line("Filename", "Category", "Date")
+    await add_line("Filename", "Category", "Size", "Date")
         
-    print("# " + name_size*" " + " # " + category_size*" " + " # " + date_size*" " + " #")
-    print("##########" + (name_size + category_size + date_size)*"#")
-    print("# " + name_size*" " + " # " + category_size*" " + " # " + date_size*" " + " #")
+    print("# " + name_size*" " + " # " + category_size*" " + " # " + filesize_size*" " + " # " + date_size*" " + " #")
+    print("#############" + (name_size + category_size + filesize_size + date_size)*"#")
+    print("# " + name_size*" " + " # " + category_size*" " + " # " + filesize_size*" " + " # " + date_size*" " + " #")
 
     await fetch_index(channel)
     with open("index.csv", 'r') as ifile:
@@ -225,10 +262,11 @@ async def show_files(channel):
             filename = line.split(",")[0]
             categ = line.split(",")[2]
             date = line.split(",")[1]
-            await add_line(filename, categ, date)
+            size = line.split(",")[3].replace("-", " ")
+            await add_line(filename, categ, size, date)
     
-    print("# " + name_size*" " + " # " + category_size*" " + " # " + date_size*" " + " #")
-    print("##########" + (name_size + category_size + date_size)*"#")
+    print("# " + name_size*" " + " # " + category_size*" " + " # " + filesize_size*" " + " # " + date_size*" " + " #")
+    print("#############" + (name_size + category_size + filesize_size + date_size)*"#")
 
     os.system('rm index.csv')
 
@@ -303,10 +341,10 @@ async def upload_query_execution(channel):
         # send files, safe msg indexes and add line to the index file
         if(index_fetched):
 
-            line_to_add = file_name + "," + time.strftime("%D %H:%M") + "," + ca
-            amount_files = len(sys.argv) - 3
+            line_to_add = file_name + "," + time.strftime("%D %H:%M") + "," + ca + "," + sys.argv[3]
+            amount_files = len(sys.argv) - 4
             print(" [~] Sending files 0/" + str(amount_files) + " : 0 %", end='\r')
-            for param_nb in range(3, len(sys.argv)):
+            for param_nb in range(4, len(sys.argv)):
                 msg = await channel.send(file=discord.File(sys.argv[param_nb]))
                 line_to_add += ("," + str(msg.id))
 
@@ -366,10 +404,10 @@ async def download_execution(channel):
         print(" [+] File found, last version taken.")
         os.system('mkdir tempcontainer')
         i = 0
-        amount_files = len(index_line.split(',')) - 3
+        amount_files = len(index_line.split(',')) - 4
         print(" [~] Downloading files 1/" + str(amount_files) +" : 0 %", end='\r')
 
-        for msg_id in index_line.split(',')[3:]:
+        for msg_id in index_line.split(',')[4:]:
             msg = await channel.fetch_message(int(msg_id))
             for attach in msg.attachments:
                 #filename = sys.argv[2] + str(i)
@@ -418,7 +456,7 @@ async def send_and_del_index(channel):
 
 
 async def check_files():
-    for i in range(3, len(sys.argv)):
+    for i in range(4, len(sys.argv)):
         file_exist = os.path.exists(sys.argv[i])
         if not file_exist:
             print(" [-] file not exist !")
