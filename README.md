@@ -7,6 +7,9 @@ Comming soon :
 - an init mode to easily setup a discloud.conf file
 
 ## discloud.py
+
+note : replace "./discloud.py" by the name you gave to the symlink (explained in the setup part)
+
 ```bash
 ./disquery.py
 ```
@@ -43,6 +46,38 @@ The only argument with "upload" must be the path of the file to upload.
 #### download mode
 
 Argument after download must be the name of the file you want to download.
+
+
+## Setup
+
+As said before, you will have to install discord.py :
+
+```bash
+pip3 install discord.py
+```
+
+
+Now cd into the directory you want to store the program in, clone the program in and cd into the new folder :
+
+```bash
+git clone https://github.com/Aweinhof/discloud.git
+cd discloud
+```
+
+
+You will have to allow the prog to run as root, to avoid errors when saving files :
+```bash
+sudo chmod u+s discloud.py
+```
+
+The last step is to make a sym link to your prog in the /usr/local/bin directory (or any other $PATH's directory). This will make your prog executable from any directory. Besides that, you can also give it a short name (for example "dc", but give it whatever you want) :
+
+```bash
+sudo ln -s "$PWD/discloud.py" /usr/local/bin/dc
+```
+
+You should now be able to execute it with "dc" anywhere in your file system
+
 
 ## index.csv
 
