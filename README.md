@@ -78,6 +78,8 @@ sudo ln -s "$PWD/discloud.py" /usr/local/bin/dsc
 
 You should now be able to execute it with "dsc" anywhere in your file system
 
+note : make sure that the name you give to your prog isn't an existing prog. To check that, execute the name in a terminal and make sure it tells you "command not found".
+
 
 ## index.csv
 
