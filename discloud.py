@@ -126,7 +126,7 @@ def upload_execution():
 
     os.system(splitquery)
     
-    uploadquery = "./discloud.py upload_query " + filename + " " + size
+    uploadquery = complete_path + " upload_query " + filename + " " + size
     for file in sorted(os.listdir('tempcontainer')):
         uploadquery += " tempcontainer/" + file
 
@@ -370,7 +370,7 @@ async def upload_query_execution(channel):
 
 
 async def update_index_f_msg_id(new_msg_id, channel):
-    with open("discloud.conf", 'r') as f:
+    with open(complete_path.replace("discloud.py", "discloud.conf"), 'r') as f:
         token = f.readline()            # token of the discord bot
         channel_id = f.readline()       # id of the channel that is used
         index_id = f.readline()         # id of the message that contains the index file
@@ -380,11 +380,11 @@ async def update_index_f_msg_id(new_msg_id, channel):
 
 
 async def update_pointermsg_id(new_msg_id):
-    a_file = open("discloud.conf", "r")
+    a_file = open(complete_path.replace("discloud.py", "discloud.conf"), "r")
     list_of_lines = a_file.readlines()
     list_of_lines[2] = str(new_msg_id) + "\n"
 
-    a_file = open("discloud.conf", "w")
+    a_file = open(complete_path.replace("discloud.py", "discloud.conf"), "w")
     a_file.writelines(list_of_lines)
     a_file.close()
 
@@ -430,7 +430,7 @@ async def download_execution(channel):
 
 async def fetch_index(channel):
     # here we have to refetch the index_file_id, needed if we just created an index file
-    with open("discloud.conf", 'r') as f:
+    with open(complete_path.replace("discloud.py", "discloud.conf"), 'r') as f:
         token = f.readline()            # token of the discord bot
         channel_id = f.readline()       # id of the channel that is used
         index_id = f.readline()    # id of the message that contains the index file
@@ -528,8 +528,10 @@ async def on_ready():
 
 ########################################## MAIN ##########################################
 
+complete_path = os.path.realpath(__file__)
+
 # variables 
-with open("discloud.conf", 'r') as f:
+with open(complete_path.replace("discloud.py", "discloud.conf"), 'r') as f:
     token = f.readline()            # token of the discord bot
     channel_id = f.readline()       # id of the channel that is used
     index_file_id = f.readline()    # id of the message that contains the index file
