@@ -130,7 +130,7 @@ async def reset(is_hard, channel):
     confirmed = await confirm_msg(is_hard)
 
     if is_hard and confirmed:
-        await update_index_f_msg_id("")
+        await update_index_f_msg_id("/", channel)
 
         counter = 0
         li = await channel.history(limit=1).flatten()
@@ -149,7 +149,7 @@ async def reset(is_hard, channel):
 
 
     elif confirmed:
-        await update_index_f_msg_id("")
+        await update_index_f_msg_id("/", channel)
         print(" [+] Successfully cleared the index file.")
         print(" [+] Done.")
 
@@ -331,7 +331,17 @@ async def upload_query_execution(channel):
         #====================================================================================
 
 
-async def update_index_f_msg_id(new_msg_id):
+async def update_index_f_msg_id(new_msg_id, channel):
+    with open("discloud.conf", 'r') as f:
+        token = f.readline()            # token of the discord bot
+        channel_id = f.readline()       # id of the channel that is used
+        index_id = f.readline()         # id of the message that contains the index file
+
+    index_msg = await channel.fetch_message(index_id)
+    index_msg.edit(content=new_msg_id)
+
+
+async def update_pointermsg_id(new_msg_id):
     a_file = open("discloud.conf", "r")
     list_of_lines = a_file.readlines()
     list_of_lines[2] = str(new_msg_id) + "\n"
@@ -387,7 +397,10 @@ async def fetch_index(channel):
         channel_id = f.readline()       # id of the channel that is used
         index_id = f.readline()    # id of the message that contains the index file
 
-    index_f_msg = await channel.fetch_message(index_id)
+    index_msg = await channel.fetch_message(index_id)
+    index_f_msg_index = index_msg.content   # this is the index of the msg that contains the index file
+    index_f_msg = await channel.fetch_message(index_f_msg_index)
+
     for attach in index_f_msg.attachments:
         await attach.save(f"./index.csv")
     
@@ -399,7 +412,7 @@ async def fetch_index(channel):
 
 async def send_and_del_index(channel):
     msg = await channel.send(file=discord.File("index.csv"))
-    await update_index_f_msg_id(msg.id)
+    await update_index_f_msg_id(msg.id, channel)
     os.system('rm index.csv')
     print(' [+] Successfully sent the new index file.')
 
@@ -431,7 +444,17 @@ async def test_index_file(channel):
         await create_index_file(channel)
 
     else:
-        print(" [+] index file message id found : " + index_file_id)
+        try:
+            container_msg = await channel.fetch_message(int(index_file_id))
+            if container_msg.content == "/":
+                raise Exception("")
+        except:
+            print(" [~] could not find either the indexfile pointer msg or the indexfile msg")
+            print(" [~]     --> creating a new index file")
+            await create_index_file(channel)
+        else:
+            print(" [+] index file message id found : " + index_file_id)
+
 
 
 
@@ -441,10 +464,14 @@ async def create_index_file(channel):
 
     index_msg = await channel.send(file=discord.File('index.csv'))
     index_file_id = index_msg.id
+
+    pointer_msg = await channel.send(int(index_file_id))
+    pointer_msg_id = pointer_msg.id
+
     os.remove('index.csv')
-    await update_index_f_msg_id(index_file_id)
-    #with open('discloud.conf', 'a') as f:
-    #    f.write(str(index_file_id))
+    await update_pointermsg_id(pointer_msg_id)
+    #await update_index_f_msg_id(index_file_id, channel)
+
 
 # =================================================================================
 
