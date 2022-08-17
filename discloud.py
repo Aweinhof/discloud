@@ -338,7 +338,7 @@ async def update_index_f_msg_id(new_msg_id, channel):
         index_id = f.readline()         # id of the message that contains the index file
 
     index_msg = await channel.fetch_message(index_id)
-    index_msg.edit(content=new_msg_id)
+    await index_msg.edit(content=new_msg_id)
 
 
 async def update_pointermsg_id(new_msg_id):
@@ -446,8 +446,10 @@ async def test_index_file(channel):
     else:
         try:
             container_msg = await channel.fetch_message(int(index_file_id))
-            if container_msg.content == "/":
+            indexmsg_id = container_msg.content
+            if indexmsg_id == "/":
                 raise Exception("")
+            await channel.fetch_message(int(indexmsg_id))
         except:
             print(" [~] could not find either the indexfile pointer msg or the indexfile msg")
             print(" [~]     --> creating a new index file")
