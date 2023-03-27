@@ -6,8 +6,10 @@ import os
 import time
 
 
+intents = discord.Intents.default()
+
 #client = discord.Client(restTimeOffset=0)
-client = discord.Client()
+client = discord.Client(intents=intents)
 
 # Litle function to easily quit the program
 async def quit_prog():
@@ -550,6 +552,7 @@ if(len(sys.argv) > 1 and (sys.argv[1] == 'upload' or sys.argv[1] == 'u')):
         exit()
 
 
+print(token)
 client.run(token)
 
 exit()
