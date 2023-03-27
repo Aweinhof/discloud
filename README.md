@@ -70,13 +70,15 @@ You will have to allow the prog to run as root, to avoid errors when saving file
 sudo chmod u+s discloud.py
 ```
 
-The last step is to make a sym link to your prog in the /usr/local/bin directory (or any other $PATH's directory). This will make your prog executable from any directory. Besides that, you can also give it a short name (for example "dc", but give it whatever you want) :
+The last step is to make a sym link to your prog in the /usr/local/bin directory (or any other $PATH's directory). This will make your prog executable from any directory. Besides that, you can also give it a short name (for example "dsc", but give it whatever you want) :
 
 ```bash
-sudo ln -s "$PWD/discloud.py" /usr/local/bin/dc
+sudo ln -s "$PWD/discloud.py" /usr/local/bin/dsc
 ```
 
-You should now be able to execute it with "dc" anywhere in your file system
+You should now be able to execute it with "dsc" anywhere in your file system
+
+note : make sure that the name you give to your prog isn't an existing prog. To check that, execute the name in a terminal and make sure it tells you "command not found".
 
 
 ## index.csv
