@@ -114,3 +114,8 @@ The reason I have to use a message as a pointer to another message that contains
 Only the discord bot token and channel id need to be set. The bot will automatically create a new index file.
 
 In order to use this script, you will have to make your own discord application with a bot [here](https://discord.com/login?redirect_to=%2Fdevelopers%2Fapplications) and get your bot token, put it in your discord server. The channel id is the id of the channel you want to use as data base. You can fetch it by right clicking the channel -> Copy ID (dev mode has to be enabled).
+
+
+## Troubleshooting
+
+If you're on MacOS and have python 3.6 or above, you might encounter an error due to a missing certificate. To solve this, go to your Application folder in your finder, open the python folder, and double click "Install Certificates.command" file.
